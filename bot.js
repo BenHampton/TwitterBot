@@ -1,15 +1,58 @@
-console.log("TESTING: follow")
+console.log("TESTING: media")
 var Twit = require("twit"); //like in  JAVA Import
-
 var config = require('./config');  // where config.js contains the twitter keys/tokens
 //creating a new object T
 var T = new Twit (config);
+
+var fs = require('fs');
+var imgPATH = "./img/output.png";
+
+tweetMedia();
+
+function tweetMedia() {
+  console.log("TESTING: were in")
+  var params = {
+     encoding: 'base64'
+   };
+
+  var b64 = fs.readFileSync(imgPATH, params);
+
+  T.post('media/upload', { media_data: b64 }, uploaded);
+
+  function uploaded(err, data, response) {
+    console.log("TESTING: uplaoded");
+    //this is where i will tweet
+    var mediaIdStr = data.media_id_string;
+    var altText = "I AM ALT_TEXT";
+    var meta_params = {
+      alt_text: {text: altText},
+      media_id: mediaIdStr
+    }
+    console.log(meta_params);
+
+    T.post('media/metadata/create', meta_params, uploadImg);
+    
+    function uploadImg(err, data, response){
+      console.log("TESTING: uplaodImg");
+      var tweet = {
+        status: '#CodeMeida',
+        media_ids: [mediaIdStr]
+      }
+      T.post('statuses/update', tweet, tweeted);
+        console.log("TESTING: tweeted")
+        function tweeted(err, data, response){
+          //NO ERRORS print to console
+          console.log("Tweeting Img");
+      }
+    }
+  }
+}//end of tweetMedia
 
 //set up user stream
 var stream = T.stream("user");
 
 //anytime someone follows me
-stream.on('follow', followed);
+//stream.on('follow', followed);
 
 function followed(eventMsg) {
   console.log("FOLLOW EVENT")
