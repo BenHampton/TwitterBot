@@ -31,19 +31,15 @@ function tweetMedia() {
     console.log(meta_params);
 
     T.post('media/metadata/create', meta_params, uploadImg);
-    
+
     function uploadImg(err, data, response){
       console.log("TESTING: uplaodImg");
       var tweet = {
         status: '#CodeMeida',
         media_ids: [mediaIdStr]
       }
-      T.post('statuses/update', tweet, tweeted);
+      T.post('statuses/update', tweet, tweetGET(tweet));
         console.log("TESTING: tweeted")
-        function tweeted(err, data, response){
-          //NO ERRORS print to console
-          console.log("Tweeting Img");
-      }
     }
   }
 }//end of tweetMedia
@@ -84,24 +80,9 @@ function tweetPOST(txt) {
   }
 }//end of tweetPOST
 
-function tweetGET(){
-  //object 'parms' that will be searched via T with 'q'-Query being what HashTag too search for, 'count'-How many results/searches
-  var parms = {
-    q: 'testPost_0',
-    count: 3
-   }
-  //Get Method, parameters (searching for tweets,  the parameters of the search,   call back function-'gotData')
-  T.get('search/tweets', parms, gotData);
-
+function tweetGET(tweet){
+  T.get('search/tweets', tweet, gotData);
   //call back function
   function gotData(err, data, response) {
-  // tweet = data(JSON) .  statuses(in parameter in JSON)
-    var  tweets = data.statuses;
-    //for-loop retreive all data from data(JSON)
-     for ( var i = 0; i < tweets.length; i++ ){
-         //print to console 'tweet[i].text' - the JSON parameter 'text' - HashTag being used
-        console.log("HERE",tweets[i].text);
-    }
-    console.log(data);
   };
 }//end of tweetGET
