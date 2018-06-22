@@ -5,9 +5,9 @@ var config = require('./config');  // where config.js contains the twitter keys/
 var T = new Twit (config);
 
 var fs = require('fs');
-var imgPATH = "./img/output.png";
+var imgPATH = "./img/ai.png";
 
-tweetMedia();
+//tweetMedia();
 
 function tweetMedia() {
   console.log("TESTING: were in")
@@ -23,7 +23,7 @@ function tweetMedia() {
     console.log("TESTING: uplaoded");
     //this is where i will tweet
     var mediaIdStr = data.media_id_string;
-    var altText = "I AM ALT_TEXT";
+    var altText = "I AM ALT_TEXT0";
     var meta_params = {
       alt_text: {text: altText},
       media_id: mediaIdStr
@@ -31,40 +31,38 @@ function tweetMedia() {
     console.log(meta_params);
 
     T.post('media/metadata/create', meta_params, uploadImg);
-
     function uploadImg(err, data, response){
       console.log("TESTING: uplaodImg");
       var tweet = {
-        status: '#CodeMeida',
+        status: '#CodeToMeida0',
         media_ids: [mediaIdStr]
       }
-      T.post('statuses/update', tweet, tweetGET(tweet));
-        console.log("TESTING: tweeted")
+      T.post('statuses/update', tweet, tweetPOST(tweet));
+      }
     }
-  }
 }//end of tweetMedia
 
 //set up user stream
 var stream = T.stream("user");
 
 //anytime someone follows me
-//stream.on('follow', followed);
+stream.on('follow', followed);
 
 function followed(eventMsg) {
   console.log("FOLLOW EVENT")
   var name = eventMsg.source.name;
   var screenName = eventMsg.source.screen_name;
-  tweetPOST('@' + screenName + ' thanks for following!!');
+  tweetPOST('@' + screenName + ' Jorge is my only friend.. LOL!!');
 }
 
 //setInterval(tweetPOST,1000*10);
 
-function tweetPOST(txt) {
+function tweetPOST(tweet) {
   //var r = Math.floor(Math.random()*100);
   //object tweet with element 'status' that is going to be the HashTag
-   var tweet = {
-     status: txt
-   };
+   // var tweet = {
+   //   status: txt
+   // };
 
   //Post Method, parameters (update tweet,  the parameters of the tweet,   call back function-'tweeted')
   T.post('statuses/update', tweet , tweeted);
@@ -75,14 +73,29 @@ function tweetPOST(txt) {
       console.log("Error: ", err);
     }else {
       //NO ERRORS print to console
-      console.log("Tweeting");
+      console.log("Tweeting POST");
     }
   }
 }//end of tweetPOST
 
-function tweetGET(tweet){
-  T.get('search/tweets', tweet, gotData);
+function tweetGET(){
+  //object 'parms' that will be searched via T with 'q'-Query being what HashTag too search for, 'count'-How many results/searches
+  var parms = {
+    q: 'testPost_0',
+    count: 3
+   }
+  //Get Method, parameters (searching for tweets,  the parameters of the search,   call back function-'gotData')
+  T.get('search/tweets', parms, gotData);
+
   //call back function
   function gotData(err, data, response) {
+  // tweet = data(JSON) .  statuses(in parameter in JSON)
+    var  tweets = data.statuses;
+    //for-loop retreive all data from data(JSON)
+     for ( var i = 0; i < tweets.length; i++ ){
+         //print to console 'tweet[i].text' - the JSON parameter 'text' - HashTag being used
+        console.log("HERE",tweets[i].text);
+    }
+    console.log(data);
   };
 }//end of tweetGET
