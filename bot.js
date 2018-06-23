@@ -10,22 +10,53 @@ var imgPATH = "./img/ai.png";
 //set up user stream
 var stream = T.stream('user');
 
+/***************setInterval***************/
+//setInterval(tweetPOST,1000*10);
+
+/***************GET list of USERS followers by USER's json:id***************/
+function getUserFollowers() {
+  var params = {
+    screen_name: 'arielengle'
+  }
+  T.get('followers/ids', params, userFollowers);
+
+  function userFollowers(err, data, response) {
+    console.log(data);
+  }
+}//end of getUserFollowers
+
+/***************FOLLOW***************/
+function followUser(){
+  var params = {
+    id: '2429599602'
+  }
+  T.post('friendships/create', params, reqFollow);
+
+  function reqFollow(err, data, response) {
+    if(!err){
+      console.log("attemping to follow")
+    }else {
+      console.log("Error occured while attempting to follow")
+    }
+  }
+}//end of followUser
 
 /***************RETWEET***************/
-  stream.on('tweet', tweetEvent);
+  stream.on('tweet', tweetEvent);  //when someone tweets @me
 
   function tweetEvent(eventMsg) {
     console.log(eventMsg); //Displays user who tweeted @me - JSON
     var replyTo = eventMsg.in_reply_to_screen_name;
     var text = eventMsg.text;
     var from = eventMsg.user.screen_name;
+    var id = eventMsg.user.id;
     console.log(replyTo);
     console.log(text);
     console.log(from);
+    console.log(id);
   }
 
 /***************MEDIA***************/
-//tweetMedia();
 function tweetMedia() {
   console.log("Meida: were in Media")
   var params = {
@@ -60,8 +91,7 @@ function tweetMedia() {
 }//end of tweetMedia
 
 /***************TWEET @user WHO FOLLOWED***************/
-//anytime someone follows me
-stream.on('follow', followed);
+stream.on('follow', followed); //anytime someone follows me
 
 function followed(eventMsg) {
   console.log("FOLLOW EVENT")
@@ -72,9 +102,6 @@ function followed(eventMsg) {
   };
   tweetPOST(tweet);
 }
-
-/***************setInterval***************/
-//setInterval(tweetPOST,1000*10);
 
 /***************POST**************/
 function tweetPOST(tweet) {
@@ -92,7 +119,6 @@ function tweetPOST(tweet) {
     }
   }
 }//end of tweetPOST
-
 
 /***************GET***************/
 function tweetGET(){
