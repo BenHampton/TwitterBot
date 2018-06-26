@@ -90,7 +90,7 @@ function tweetMedia() {
     }
 }//end of tweetMedia
 
-/***************TWEET @user WHO FOLLOWED***************/
+/***************TWEET @ME & FOLLOWED***************/
 stream.on('follow', followed); //anytime someone follows me
 
 function followed(eventMsg) {
@@ -102,6 +102,37 @@ function followed(eventMsg) {
   };
   tweetPOST(tweet);
 }
+
+stream.on('tweet', tweetedBot);
+
+function tweetedBot(e) {
+  var id = e.user.id
+  var screenName = e.user.screen_name;
+  var name = e.user.name;
+  var replyTo = e.in_reply_to_screen_name
+
+  var Userparams = {
+    id: id,
+    screen_name: screenName,
+  };
+
+  if(replyTo === botScreenName){
+    console.log('@',screenName,' tagged BOT');
+
+    T.post('friendships/create', Userparams, followTweeter);
+
+    function followTweeter(err, data, response){
+      if(!err){
+        console.log('Follwed back @',screenName,' who tweeted @ME');
+      }else {
+        console.log('Follow Back: Error');
+      }
+    }//end of if-else
+  }else{
+    console.log('Waiting for tweet');
+  }
+}//end of tweetedBot()
+
 
 /***************POST**************/
 function tweetPOST(tweet) {
