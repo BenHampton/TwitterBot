@@ -42,7 +42,7 @@ function startSearch() { // searches for last tweet/retweet from @arielengle & c
     var params = {
       id: tweetId
     }
-    retweetedBot(params, screenName);
+    retweeted(params, screenName);
     console.log("startSearch: Completed");
   }
 }//end of search()
@@ -73,16 +73,46 @@ function search() {
     if(newTweet === firstTweet){
       console.log('Nothing new to Retweet.. :(');
     }else{
-      retweetedBot(params, screenName);
+      //retweeted(params, screenName);
       firstTweet = newTweet
       console.log('firstTweet: Reset');
     }
   }//end if gotData()
 }//end of search()
 
+/***************@BOT followers for validation***************/
+
+function botFollowers(wannabe) {
+
+  var params = {
+    screen_name: 'Brax'+'Thebot'
+  }
+
+  T.get('followers/ids', params, getBotties)
+
+  function getBotties(err, data, response) {
+    var bottiesId = data.ids;
+    var bIds = new Array();
+    var pawn;
+    for(var b of bottiesId){
+      bIds.push(b);
+    }
+    console.log(wannabe);
+    //if BOT followerID == pawn BAD else GOOD
+    for(pawn of bIds){
+      if(wannabe === pawn){
+        console.log('not a chance');
+      }else{
+          console.log('welcome');
+          randomFriend(wannabe);
+      }
+    }
+  }//end of getBotties()
+}//end of botFollowers
+
 /***************retweet***************/
 //follow anyone who retweets @BOT
-function retweetedBot(tweetId, sn) {
+function retweeted(tweetId, sn) {
 
   T.post('statuses/retweet/:id', tweetId, retweet);
 
@@ -92,7 +122,7 @@ function retweetedBot(tweetId, sn) {
 
     if(!err) {
       console.log('Retweeted');
-      friendFinder(screenName);
+      //friendFinder(screenName);
     }else {
       console.log('Error: Retweeting', err);
     }
@@ -136,7 +166,7 @@ function postTweet(params) {
   }
 }//end of postTweet()
 
-/***************EMBEDDED function: friendFinder***************/
+/***************friendFinder***************/
 //any @USER that follows @BOT.. get list of @USERS 'followers'
 //pick 2 random followers from @USER
 //follow those 2 USERS
@@ -152,25 +182,25 @@ function friendFinder(sc) {
 
     var followerIds = data.ids;
     var followers = new Array();
-    var rand;
+    var rand1;
 
-    if(!err){
+    if(!err) {
       for(var i of followerIds){
         var str = i.toString()
         followers.push(str);
       }
-
-        rand = followers[Math.floor(Math.random() * followers.length)];
-        var params = {
-          id: rand
+        rand1 = followers[Math.floor(Math.random() * followers.length)];
+        //'22426299'
+        var r = {
+          id: rand1
         }
-        console.log(params);
-        randomFriend(params);
+        //check to see if i am or requested to follow @USER
+        botFollowers(r);
 
     }else{
       console.log('Error: getUserFollowers');
     }
- }//end of getUserFollowers()
+  }//end of getUserFollowers()
 }//end of friendFinder()
 
 function randomFriend(params) {
@@ -186,21 +216,4 @@ function randomFriend(params) {
   }//end of getFriend()
 }
 
-
-
-/***************functions in botTemplate***************/
-
-
-/***************GET list of USERS followers by USER's json:id***************/
-
-/***************FOLLOW***************/
-
-/***************RETWEET***************/
-
-/***************MEDIA***************/
-
-/***************TWEET @user WHO FOLLOWED***************/
-
-/***************POST**************/
-
-/***************GET***************/
+/***************search @BOT to test follower list***************/
